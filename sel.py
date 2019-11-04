@@ -1,4 +1,5 @@
 import os
+import pyttsx
 from selenium.webdriver import Chrome
 from selenium.webdriver import ChromeOptions
 from selenium.webdriver.common.by import By
@@ -55,8 +56,12 @@ try:
 
     # 获取每日指令
     cmd_xpath = '//*[@id="root"]/div/div[3]/div[1]/div[3]/div[2]/div[1]/span[2]'
-    cmd = wait.until(EC.presence_of_element_located((By.XPATH, cmd_xpath)))
-    print(f"获取到今日指令为{cmd.text}")
+    cmd = wait.until(EC.presence_of_element_located((By.XPATH, cmd_xpath))).text
+    print(f"获取到今日指令为{cmd}")
+    
+    engine = pyttsx.init()
+    engine.say(cmd)
+    engine.runAndWait()
 except Exception:
     driver.close()
     print("登陆失败")
