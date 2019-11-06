@@ -9,8 +9,14 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 import time
 import json
+import logging
 import traceback
+import re
 
+logging.basicConfig(filename='tmallgenius.log'
+,format='[%(asctime)s-%(filename)s-%(levelname)s:%(message)s]'
+,level = logging.ERROR,filemode='w'
+,datefmt='%Y-%m-%d%I:%M:%S %p')
 
 if os.path.exists('config.json'):
     with open('config.json') as f:
@@ -29,7 +35,7 @@ else:
 options = ChromeOptions()
 
 # headless模式
-options.add_argument('--headless')
+# options.add_argument('--headless')
 
 # 不加载图片,加快访问速度
 options.add_experimental_option("prefs", {"profile.managed_default_content_settings.images": 2})
@@ -70,18 +76,18 @@ try:
     # 获取每日指令
     cmd_xpath = '//*[@id="root"]/div/div[3]/div[1]/div[3]/div[2]/div[1]/span[2]'
     cmd = wait.until(EC.presence_of_element_located((By.XPATH, cmd_xpath))).text
-    
-    cmd = cmd.split('”')[0].split('“')[-1]
+    logging.info(cmd)
+    cmd = re.findall('”(.*?)“', cmd)[0]
     
     if not cmd.startswith('天猫精灵'):
         cmd = '天猫精灵，' + cmd
-    print(f"获取到今日指令为{cmd}")
-    
+    print("获取到今日指令为: " + cmd)
+    logging.error("获取到今日指令为: " + cmd)
     engine = pyttsx3.init()
     engine.say(cmd)
     engine.runAndWait()
 except Exception as e:
     print(f"登陆失败")
-    traceback.print_exc()
+    logging.error(traceback.format_exc())
 
 driver.close()
