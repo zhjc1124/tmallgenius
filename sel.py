@@ -34,7 +34,7 @@ else:
 # 设置参数
 options = ChromeOptions()
 
-# headless模式
+# headless模式, 运行速度慢很多，非常不建议用
 # options.add_argument('--headless')
 
 # 不加载图片,加快访问速度
