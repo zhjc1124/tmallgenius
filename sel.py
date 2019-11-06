@@ -1,5 +1,5 @@
 import os
-import pyttsx
+import pyttsx3
 from selenium.webdriver import Chrome
 from selenium.webdriver import ChromeOptions
 from selenium.webdriver.common.by import By
@@ -8,16 +8,27 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 import time
-from playsound import playsound
-username = 'zhjc1124@gmail.com' # 你的淘宝账号
-password = 'Qwerty7620' # 你的淘宝密码
-starttime = '09:30' # 每天的启动时间
+import json
+
+
+if os.path.exists('config.json'):
+    with open('config.json') as f:
+        j = json.load(f)
+    username = j['username']
+    password = j['password']
+else:
+    username = input('请输入用户名：')
+    password = input('请输入密码：')
+    j = {'username': username, 'password': password}
+    with open('config.json', 'w') as f:
+        json.dump(j, f)
+
 
 # 设置参数
 options = ChromeOptions()
 
 # headless模式无法运行
-# options.add_argument('--headless')
+options.add_argument('--headless')
 
 # 不加载图片,加快访问速度
 options.add_experimental_option("prefs", {"profile.managed_default_content_settings.images": 2})
@@ -32,9 +43,10 @@ wait = WebDriverWait(driver, 40)
 driver.get('https://login.taobao.com/member/login.jhtml')
 try:
     # 这里设置等待：等待输入框
-    login_element = wait.until(
-        EC.presence_of_element_located((By.CSS_SELECTOR, '.qrcode-login > .login-links > .forget-pwd')))
-    login_element.click()
+    check_element = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="J_LoginBox"]')))
+    if check_element.get_attribute('class').endswith('quick'):        
+        login_element = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="J_Quick2Static"]')))
+        login_element.click()
 
     sina_login = wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '.weibo-login')))
     sina_login.click()
@@ -57,18 +69,17 @@ try:
     # 获取每日指令
     cmd_xpath = '//*[@id="root"]/div/div[3]/div[1]/div[3]/div[2]/div[1]/span[2]'
     cmd = wait.until(EC.presence_of_element_located((By.XPATH, cmd_xpath))).text
+    
+    cmd = cmd.split('”')[0].split('“')[-1]
+    
+    if not cmd.startswith('天猫精灵'):
+        cmd = '天猫精灵，' + cmd
     print(f"获取到今日指令为{cmd}")
     
-    engine = pyttsx.init()
+    engine = pyttsx3.init()
     engine.say(cmd)
     engine.runAndWait()
-except Exception:
-    driver.close()
-    print("登陆失败")
+except Exception as e:
+    print(f"登陆失败{repr(e)}")
 
-
-
-
-
-
-
+driver.close()
