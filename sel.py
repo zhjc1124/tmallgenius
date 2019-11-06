@@ -9,6 +9,7 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.keys import Keys
 import time
 import json
+import traceback
 
 
 if os.path.exists('config.json'):
@@ -27,7 +28,7 @@ else:
 # 设置参数
 options = ChromeOptions()
 
-# headless模式无法运行
+# headless模式
 options.add_argument('--headless')
 
 # 不加载图片,加快访问速度
@@ -80,6 +81,7 @@ try:
     engine.say(cmd)
     engine.runAndWait()
 except Exception as e:
-    print(f"登陆失败{repr(e)}")
+    print(f"登陆失败")
+    traceback.print_exc()
 
 driver.close()
