@@ -24,8 +24,8 @@ if os.path.exists('config.json'):
     username = j['username']
     password = j['password']
 else:
-    username = input('请输入用户名：')
-    password = input('请输入密码：')
+    username = input('请输入微博账号：')
+    password = input('请输入微博密码：')
     j = {'username': username, 'password': password}
     with open('config.json', 'w') as f:
         json.dump(j, f)
