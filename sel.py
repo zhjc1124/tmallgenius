@@ -83,9 +83,14 @@ try:
         cmd = '天猫精灵，' + cmd
     print("获取到今日指令为: " + cmd)
     logging.error("获取到今日指令为: " + cmd)
-    engine = pyttsx3.init()
-    engine.say(cmd)
-    engine.runAndWait()
+    def play(string):
+        engine = pyttsx3.init()
+        engine.say(cmd)
+        engine.runAndWait()
+    import time
+    play("天猫精灵")
+    time.sleep(1)
+    play(cmd.split('，')[-1])
 except Exception as e:
     print(f"登陆失败")
     logging.error(traceback.format_exc())
