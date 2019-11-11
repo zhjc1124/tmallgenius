@@ -85,7 +85,7 @@ try:
     logging.error("获取到今日指令为: " + cmd)
     def play(string):
         engine = pyttsx3.init()
-        engine.say(cmd)
+        engine.say(string)
         engine.runAndWait()
     import time
     play("天猫精灵")
